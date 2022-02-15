@@ -21,7 +21,15 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 }
