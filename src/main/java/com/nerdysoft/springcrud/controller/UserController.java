@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/")
 public class UserController {
 
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -23,14 +23,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/")
+    @GetMapping
     public String getPageWithAllUsers(Model model) {
-        List<User> users = userService.findAllUsers();
-        logger.info("user list size: " + users.size());
-        for (User user : users) {
-            logger.info("user: " + user.getId() + " " + user.getEmail());
-        }
-        model.addAttribute("users", users);
+        model.addAttribute("users", userService.findAllUsers());
         return "users";
     }
 }

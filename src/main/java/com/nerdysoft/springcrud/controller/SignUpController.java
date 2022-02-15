@@ -8,8 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/signup")
 public class SignUpController {
 
     private UserService userService;
@@ -19,15 +21,15 @@ public class SignUpController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/signup")
+    @GetMapping
     String getRegistrationPage(Model model) {
         model.addAttribute("user", new User());
         return "signup";
     }
 
-    @PostMapping(value = "/signup")
+    @PostMapping
     String registerUser(@ModelAttribute User user) {
         userService.saveUser(user);
-        return "users";
+        return "success";
     }
 }
