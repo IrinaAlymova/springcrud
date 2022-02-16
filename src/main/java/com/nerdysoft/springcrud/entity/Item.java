@@ -1,5 +1,6 @@
 package com.nerdysoft.springcrud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,5 +26,6 @@ public class Item {
     private BigDecimal price;
 
     @ManyToMany(mappedBy = "orderItems")
+    @JsonIgnore
     private List<Order> ordersOfItem;
 }

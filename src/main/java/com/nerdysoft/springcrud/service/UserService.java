@@ -1,5 +1,6 @@
 package com.nerdysoft.springcrud.service;
 
+import com.nerdysoft.springcrud.entity.Order;
 import com.nerdysoft.springcrud.entity.User;
 import com.nerdysoft.springcrud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,19 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User saveUser(User user) {
+    public User addNewUser(User user) {
         return userRepository.save(user);
     }
 
-    public void deleteUser(User user) {
-        userRepository.delete(user);
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+
+    public List<Order> getUserOrdersById(Long id) {
+        return getUserById(id).getOrders();
     }
 }

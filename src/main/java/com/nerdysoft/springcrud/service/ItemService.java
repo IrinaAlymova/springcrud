@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ItemService {
@@ -19,6 +20,7 @@ public class ItemService {
 
     public Item addItem(Item newItem) {
         return itemRepository.save(newItem);
+        //TODO: add exception if item already exists
     }
 
     public List<Item> getAllItems() {
@@ -33,5 +35,9 @@ public class ItemService {
     public void deleteItem(Long id) {
         Item item = getItemById(id);
         itemRepository.delete(item);
+    }
+
+    public List<Object[]> getAllItemsCount() {
+        return itemRepository.getAllItemsCount();
     }
 }
