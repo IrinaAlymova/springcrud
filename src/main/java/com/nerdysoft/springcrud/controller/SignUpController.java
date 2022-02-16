@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/signup")
 public class SignUpController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public SignUpController(UserService userService) {
@@ -22,13 +22,13 @@ public class SignUpController {
     }
 
     @GetMapping
-    String getRegistrationPage(Model model) {
+    public String getRegistrationPage(Model model) {
         model.addAttribute("user", new User());
         return "signup";
     }
 
     @PostMapping
-    String registerUser(@ModelAttribute User user) {
+    public String registerUser(@ModelAttribute User user) {
         userService.saveUser(user);
         return "success";
     }
