@@ -20,8 +20,8 @@ public class ItemController {
     }
 
     @PostMapping
-    public void addNewItem(@RequestBody Item item) {
-        itemService.addItem(item);
+    public Item addNewItem(@RequestBody Item item) {
+        return itemService.addItem(item);
     }
 
     @GetMapping("/{id}")
@@ -37,11 +37,6 @@ public class ItemController {
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable Long id) {
         itemService.deleteItem(id);
-    }
-
-    @GetMapping("/count")
-    public List<Object[]> getAllItemsCount() {
-        return itemService.getAllItemsCount();
     }
 
 }

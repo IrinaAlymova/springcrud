@@ -37,7 +37,5 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    public List<Object[]> getAllItemsCount() {
-        return itemRepository.getAllItemsCount();
-    }
+    
 }
