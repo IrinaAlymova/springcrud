@@ -1,17 +1,18 @@
 package com.nerdysoft.springcrud.controller;
 
-import com.nerdysoft.springcrud.entity.Item;
-import com.nerdysoft.springcrud.entity.Order;
-import com.nerdysoft.springcrud.entity.User;
+import com.nerdysoft.springcrud.dto.OrderGetDTO;
+import com.nerdysoft.springcrud.dto.UserGetDTO;
+import com.nerdysoft.springcrud.dto.UserPostDTO;
+import com.nerdysoft.springcrud.mappers.OrderMapper;
+import com.nerdysoft.springcrud.mappers.UserMapper;
 import com.nerdysoft.springcrud.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -20,30 +21,38 @@ public class UserController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
+    private final UserMapper userMapper;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper, OrderMapper orderMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
+        this.orderMapper = orderMapper;
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.findAllUsers();
+    public List<UserGetDTO> getAllUsers() {
+        return userService.findAllUsers()
+                .stream().map(userMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public UserGetDTO getUserById(@PathVariable Long id) {
+        return userMapper.toDTO(userService.getUserById(id));
     }
 
     @GetMapping("/{id}/orders")
-    public List<Order> getUserOrders(@PathVariable Long id) {
-        return userService.getUserOrdersById(id);
+    public List<OrderGetDTO> getUserOrders(@PathVariable Long id) {
+        return userService.getUserOrdersById(id).stream()
+                .map(orderMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
-    public User addNewUser(@RequestBody User user) {
-        return userService.addNewUser(user);
+    public UserGetDTO addNewUser(@RequestBody UserPostDTO userPostDTO) {
+        return userMapper.toDTO(userService.addNewUser(userMapper.toEntity(userPostDTO)));
     }
 
     @DeleteMapping("/{id}")

@@ -16,7 +16,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             nativeQuery = true)
     Integer getAllOrdersCount();
 
-    @Query(value = "SELECT SUM(i.price) FROM orders_items oi LEFT JOIN items i ON oi.item_id = i.id WHERE oi.order_id in (SELECT id FROM orders o WHERE user_id = ?1);",
+    @Query(value = "SELECT SUM(i.price) FROM orders_items oi LEFT JOIN items i ON oi.item_id = i.id WHERE oi.order_id in (SELECT o.id FROM orders o WHERE o.user_id = ?1);",
             nativeQuery = true)
     BigDecimal getAllOrdersPriceByUserId(Long user_id);
 
