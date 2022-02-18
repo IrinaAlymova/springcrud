@@ -2,6 +2,7 @@ package com.nerdysoft.springcrud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,6 +26,9 @@ public class User {
     @Column(name = "password", nullable = false)
     @JsonIgnore
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore

@@ -2,6 +2,7 @@ package com.nerdysoft.springcrud.mappers;
 
 import com.nerdysoft.springcrud.dto.UserGetDTO;
 import com.nerdysoft.springcrud.dto.UserPostDTO;
+import com.nerdysoft.springcrud.entity.Role;
 import com.nerdysoft.springcrud.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ public class UserMapper {
         return User.builder()
                 .email(userPostDTO.getEmail())
                 .password(userPostDTO.getPassword())
+                .role(Role.USER)
                 .build();
     }
 
