@@ -11,18 +11,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
     public User toEntity(UserPostDTO userPostDTO) {
         return User.builder()
                 .email(userPostDTO.getEmail())
-                .password(passwordEncoder.encode(userPostDTO.getPassword()))
-                .role(Role.USER)
+                .password(userPostDTO.getPassword())
                 .build();
     }
 

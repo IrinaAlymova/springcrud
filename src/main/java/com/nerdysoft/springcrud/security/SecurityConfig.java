@@ -9,55 +9,43 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserRepository userRepository;
+    private final JwtFilter jwtFilter;
 
     @Autowired
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter=jwtFilter;
     }
 
-    /**
-     * Authentication Manager Configuration
-     */
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(username ->  {
-            User user = userRepository.findByEmail(username);
-            if (user == null) {
-                throw new UsernameNotFoundException("user: " + username + " not found");
-            }
-            return new AppUserDetails(user);
-        });
-    }
 
-    /**
-     * Web Security Configuration
-     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.httpBasic()
-                .and().sessionManagement().disable();
-        http.authorizeRequests()
-                .antMatchers("/users")
+        http
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/users/add", "/users/auth")
                         .permitAll()
-                .antMatchers("/items", "/items/**", "/orders", "/orders", "/users/**")
+                .antMatchers("/items", "/items/**")
                         .authenticated()
                 .antMatchers("/orders/details/")
-                        .hasAuthority("ADMIN");
+                        .hasAuthority("ADMIN")
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
-    /**
-     * Setting encryption preference
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

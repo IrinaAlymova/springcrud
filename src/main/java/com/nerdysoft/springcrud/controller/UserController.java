@@ -1,5 +1,6 @@
 package com.nerdysoft.springcrud.controller;
 
+import com.nerdysoft.springcrud.dto.AuthResponseDTO;
 import com.nerdysoft.springcrud.dto.OrderGetDTO;
 import com.nerdysoft.springcrud.dto.UserGetDTO;
 import com.nerdysoft.springcrud.dto.UserPostDTO;
@@ -50,7 +51,7 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public UserGetDTO addNewUser(@RequestBody UserPostDTO userPostDTO) {
         return userMapper.toDTO(userService.addNewUser(userMapper.toEntity(userPostDTO)));
     }
@@ -58,5 +59,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+    }
+
+    @PostMapping("/auth")
+    public AuthResponseDTO authorizeUser(@RequestBody UserPostDTO userPostDTO) {
+        return AuthResponseDTO.builder()
+                .token(userService.authorizeUser(userPostDTO.getEmail(), userPostDTO.getPassword()))
+                .build();
     }
 }
