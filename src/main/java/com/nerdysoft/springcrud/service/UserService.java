@@ -4,6 +4,7 @@ import com.nerdysoft.springcrud.entity.Order;
 import com.nerdysoft.springcrud.entity.User;
 import com.nerdysoft.springcrud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

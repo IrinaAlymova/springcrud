@@ -43,9 +43,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+        http.httpBasic()
+                .and().sessionManagement().disable();
         http.authorizeRequests()
-                .antMatchers("/login", "/items/**", "/orders/**").permitAll()
-                .antMatchers("/users/**", "/orders/details/").hasAuthority("ADMIN");
+                .antMatchers("/users")
+                        .permitAll()
+                .antMatchers("/items", "/items/**", "/orders", "/orders", "/users/**")
+                        .authenticated()
+                .antMatchers("/orders/details/")
+                        .hasAuthority("ADMIN");
     }
 
     /**
