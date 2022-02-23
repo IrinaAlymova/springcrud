@@ -43,14 +43,14 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasAuthority('view_user')")
+    @PreAuthorize("(hasAuthority('view_user') and #id == authentication.principal.id) or hasAuthority('view_all_users')")
     @GetMapping("/{id}")
     public UserGetDTO getUserById(@PathVariable Long id) {
         return userMapper.toDTO(userService.getUserById(id));
     }
 
 
-    @PreAuthorize("hasAuthority('view_user')")
+    @PreAuthorize("(hasAuthority('view_user') and #id == authentication.principal.id) or hasAuthority('view_all_users')")
     @GetMapping("/{id}/orders")
     public List<OrderGetDTO> getUserOrders(@PathVariable Long id) {
         return userService.getUserOrdersById(id).stream()

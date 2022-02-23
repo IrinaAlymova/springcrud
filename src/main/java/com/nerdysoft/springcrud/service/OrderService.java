@@ -3,6 +3,8 @@ package com.nerdysoft.springcrud.service;
 import com.nerdysoft.springcrud.entity.Order;
 import com.nerdysoft.springcrud.model.OrderDetails;
 import com.nerdysoft.springcrud.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Service
 public class OrderService {
+
+    private final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final OrderRepository orderRepository;
 
@@ -28,8 +32,10 @@ public class OrderService {
     }
 
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id).orElseThrow();
-        //TODO: add exception
+        return orderRepository.findById(id).orElseThrow(() -> {
+            logger.info("order with id: " + id + " not found");
+            return new IllegalArgumentException("order not found");
+        });
     }
 
     public void deleteOrder(Long id) {

@@ -1,7 +1,10 @@
 package com.nerdysoft.springcrud.service;
 
 import com.nerdysoft.springcrud.entity.Item;
+import com.nerdysoft.springcrud.exceptions.DuplicateException;
 import com.nerdysoft.springcrud.repository.ItemRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +12,8 @@ import java.util.List;
 
 @Service
 public class ItemService {
+
+    private final Logger logger = LoggerFactory.getLogger(ItemService.class);
 
     private final ItemRepository itemRepository;
 
@@ -18,8 +23,12 @@ public class ItemService {
     }
 
     public Item addItem(Item newItem) {
+        Item item = itemRepository.findByName(newItem.getName());
+        if (item != null) {
+            logger.info("item with name: " + newItem.getName() + " already exists");
+            throw new DuplicateException("such item already exists");
+        }
         return itemRepository.save(newItem);
-        //TODO: add exception if item already exists
     }
 
     public List<Item> getAllItems() {
@@ -27,8 +36,10 @@ public class ItemService {
     }
 
     public Item getItemById(Long id) {
-        return itemRepository.findById(id).orElseThrow();
-        //TODO: add exception
+        return itemRepository.findById(id).orElseThrow(() -> {
+            logger.info("item with id: " + id + " not found");
+            return new IllegalArgumentException("item not found");
+        });
     }
 
     public void deleteItem(Long id) {

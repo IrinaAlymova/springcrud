@@ -1,8 +1,10 @@
 package com.nerdysoft.springcrud.service;
 
-import com.nerdysoft.springcrud.controller.UserController;
+import com.nerdysoft.springcrud.entity.Item;
 import com.nerdysoft.springcrud.entity.Order;
 import com.nerdysoft.springcrud.entity.User;
+import com.nerdysoft.springcrud.exceptions.DuplicateException;
+import com.nerdysoft.springcrud.exceptions.LoginFailedException;
 import com.nerdysoft.springcrud.repository.UserRepository;
 import com.nerdysoft.springcrud.security.JwtProvider;
 import org.slf4j.Logger;
@@ -36,18 +38,28 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User addNewUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(List.of(roleService.getRoleByCode("USER")));
-        return userRepository.save(user);
+    public User addNewUser(User newUser) {
+        User user = userRepository.findByEmail(newUser.getEmail());
+        if (user != null) {
+            logger.info("user with email: " + newUser.getEmail() + " already exists");
+            throw new DuplicateException("such user already exists");
+        }
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        newUser.setRoles(List.of(roleService.getRoleByCode("USER")));
+        return userRepository.save(newUser);
     }
 
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = getUserById(id);
+        userRepository.delete(user);
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.info("user with id: " + id + " not found");
+                    return new IllegalArgumentException("user not found");
+                });
     }
 
     public List<Order> getUserOrdersById(Long id) {
@@ -56,12 +68,11 @@ public class UserService {
 
     public String authorizeUser(String email, String password) {
         User user = userRepository.findByEmail(email);
-        logger.info("user from db to authorize: " + user.getEmail());
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            logger.info("login for email: " + email + " failed");
             return jwtProvider.generateToken(user.getEmail());
         } else {
-            throw new RuntimeException("login failed: " + email);
+            logger.info("login failed for email: " + email);
+            throw new LoginFailedException("wrong email or password");
         }
     }
 }

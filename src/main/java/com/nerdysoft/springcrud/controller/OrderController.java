@@ -5,7 +5,10 @@ import com.nerdysoft.springcrud.dto.OrderPostDTO;
 import com.nerdysoft.springcrud.mappers.OrderMapper;
 import com.nerdysoft.springcrud.model.OrderDetails;
 import com.nerdysoft.springcrud.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
+
+    private final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderService orderService;
     private final OrderMapper orderMapper;
@@ -32,8 +37,8 @@ public class OrderController {
         return orderMapper.toDTO(orderService.addOrder(orderMapper.toEntity(orderPostDTO)));
     }
 
-
     @PreAuthorize("hasAuthority('view_order')")
+    @PostAuthorize("returnObject.user.id == authentication.principal.id or hasAuthority('view_all_orders')")
     @GetMapping("/{id}")
     public OrderGetDTO getOrderById(@PathVariable Long id) {
         return orderMapper.toDTO(orderService.getOrderById(id));

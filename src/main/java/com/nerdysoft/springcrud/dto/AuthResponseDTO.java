@@ -1,6 +1,5 @@
 package com.nerdysoft.springcrud.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
