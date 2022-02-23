@@ -10,6 +10,7 @@ import com.nerdysoft.springcrud.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +33,8 @@ public class UserController {
         this.orderMapper = orderMapper;
     }
 
+
+    @PreAuthorize("hasAuthority('view_all_users')")
     @GetMapping
     public List<UserGetDTO> getAllUsers() {
         return userService.findAllUsers()
@@ -39,11 +42,15 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+
+    @PreAuthorize("hasAuthority('view_user')")
     @GetMapping("/{id}")
     public UserGetDTO getUserById(@PathVariable Long id) {
         return userMapper.toDTO(userService.getUserById(id));
     }
 
+
+    @PreAuthorize("hasAuthority('view_user')")
     @GetMapping("/{id}/orders")
     public List<OrderGetDTO> getUserOrders(@PathVariable Long id) {
         return userService.getUserOrdersById(id).stream()
@@ -51,16 +58,22 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+
+    @PreAuthorize("permitAll()")
     @PostMapping("/add")
     public UserGetDTO addNewUser(@RequestBody UserPostDTO userPostDTO) {
         return userMapper.toDTO(userService.addNewUser(userMapper.toEntity(userPostDTO)));
     }
 
+
+    @PreAuthorize("hasAuthority('delete_user')")
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 
+
+    @PreAuthorize("permitAll()")
     @PostMapping("/auth")
     public AuthResponseDTO authorizeUser(@RequestBody UserPostDTO userPostDTO) {
         return AuthResponseDTO.builder()
